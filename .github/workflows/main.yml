@@ -3,9 +3,6 @@ name: Build
 on: [push]
 
 env:
-FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true
-
-env:
   TOOLCHAIN: cruel
   INSTALLER: yes
 
@@ -16,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        model: [ "G973F", "G975F", "N970F" ]
+        model: [ "N970F" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +57,6 @@ jobs:
                        model=${{ matrix.model }} \
                        name="Cruel-devel"        \
                        toolchain=$TOOLCHAIN      \
-                       +magisk                   \
                        +nohardening              \
                        +ttl                      \
                        +wireguard                \
