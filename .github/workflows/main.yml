@@ -31,6 +31,9 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: sudo apt-get install -y -qq linux-firmware
 
+      - name: Copy rt2870.bin into kernel tree
+        run: cp /lib/firmware/rt2870.bin firmware/rt2870.bin
+
       - name: Disable compression in ccache and set ccache path
         run: ccache -o compression=false -o cache_dir=$HOME/.ccache
 
@@ -61,6 +64,8 @@ jobs:
                        model=${{ matrix.model }} \
                        name="Cruel-devel"        \
                        toolchain=$TOOLCHAIN      \
+                       magisk=v27.0              \
+                       +magisk                   \
                        +nohardening              \
                        +ttl                      \
                        +wireguard                \
