@@ -16,8 +16,8 @@ jobs:
         model: [ "N970F" ]
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.7'
 
@@ -33,15 +33,15 @@ jobs:
       - name: Prepare ccache timestamp
         id: ccache_timestamp
         run: |
-          echo "{FULL_DATE}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
-          echo "{MONTH_DATE}={$(date +'%Y-%m')}" >> $GITHUB_OUTPUT
+          echo "FULL_DATE=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+          echo "MONTH_DATE=$(date +'%Y-%m')" >> "$GITHUB_OUTPUT"
 
       - name: Create cache key from ${{ matrix.model }}
         id: ccache_model_key
-        run: echo "{KEY}={$( echo ${{ matrix.model }} | tr ',' '_' )}" >> $GITHUB_STATE
+        run: echo "KEY=$( echo ${{ matrix.model }} | tr ',' '_' )" >> "$GITHUB_OUTPUT"
 
       - name: Cache ccache files
-        uses: actions/cache@v5
+        uses: actions/cache@v3
         with:
           path: ~/.ccache
           key: ccache-${{ env.TOOLCHAIN }}-${{ steps.ccache_model_key.outputs.KEY }}-${{ steps.ccache_timestamp.outputs.FULL_DATE }}
@@ -54,9 +54,10 @@ jobs:
         run: |
           set -e -o pipefail
           ./cruelbuild config                    \
-                       model=N970F \
+                       model=${{ matrix.model }} \
                        name="Cruel-devel"        \
                        toolchain=$TOOLCHAIN      \
+                       +magisk                   \
                        +nohardening              \
                        +ttl                      \
                        +wireguard                \
@@ -115,21 +116,21 @@ jobs:
           unzip ../CruelKernel.zip
       - name: Upload Kernel Zip
         if: env.INSTALLER == 'yes'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: CruelKernel-${{ matrix.model }}
           path: installer/*
           if-no-files-found: error
       - name: Upload Kernel Images
         if: env.INSTALLER != 'yes'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: CruelKernel-${{ matrix.model }}
           path: '*.img'
           if-no-files-found: error
 
       - name: Upload Kernel Info
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: ConfigurationInfo-${{ matrix.model }}
           path: config.*
