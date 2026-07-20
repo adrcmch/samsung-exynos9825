@@ -29,7 +29,7 @@ jobs:
       - name: Install RT5572 (rt2870) Wi-Fi firmware
         env:
           DEBIAN_FRONTEND: noninteractive
-        run: sudo apt-get install -y -qq firmware-ralink
+        run: sudo apt-get install -y -qq linux-firmware
 
       - name: Disable compression in ccache and set ccache path
         run: ccache -o compression=false -o cache_dir=$HOME/.ccache
